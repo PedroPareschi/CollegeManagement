@@ -8,12 +8,16 @@ import br.com.pedropareschi.collegemanagement.services.StudentService;
 import com.itextpdf.text.DocumentException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.text.ParseException;
@@ -63,10 +67,17 @@ public class StudentResource {
     }
 
     @ApiOperation(value = "Getting academic records")
-    @RequestMapping(value = "/{id}/academic-record", method = RequestMethod.GET)
-    public ResponseEntity<Student> getRecordById(@PathVariable Integer id) throws DocumentException, FileNotFoundException, ParseException {
-        Student student = service.getRecord(id);
-        return ResponseEntity.noContent().build();
+    @RequestMapping(value = "/{id}/academic-record", method = RequestMethod.GET, produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<InputStreamResource> getRecordById(@PathVariable Integer id) throws DocumentException, FileNotFoundException, ParseException {
+        ByteArrayInputStream bis = service.getRecord(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=historico-escolar.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
 
 }

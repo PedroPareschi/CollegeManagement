@@ -9,56 +9,61 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.text.ParseException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.stream.Stream;
 
 public class PdfService {
 
-    private static Document document = new Document();
+    public static ByteArrayInputStream academicRecord(Student student) {
+        Document document = new Document();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            PdfWriter.getInstance(document, out);
+            document.open();
+            College college = student.getProgram().getCampus().getCollege();
+            Chunk collegeInfo = new Chunk();
+            collegeInfo.append(college.getName().toUpperCase(Locale.ROOT))
+                    .append("\n").append(student.getProgram().getCampus().getName())
+                    .append("\nCNPJ: ").append(college.getCnpj());
+            collegeInfo.setLineHeight(15);
 
-    public static void academicRecord(Student student) throws FileNotFoundException, DocumentException, ParseException {
-        PdfWriter.getInstance(document, new FileOutputStream("histórico-escolar.pdf"));
-        document.open();
-        College college = student.getProgram().getCampus().getCollege();
-        Chunk collegeInfo = new Chunk();
-        collegeInfo.append(college.getName().toUpperCase(Locale.ROOT))
-                .append("\n").append(student.getProgram().getCampus().getName())
-                .append("\nCNPJ: ").append(college.getCnpj());
-        collegeInfo.setLineHeight(15);
+            Paragraph paragraph = new Paragraph();
+            paragraph.add(collegeInfo);
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            document.add(paragraph);
 
-       Paragraph paragraph = new Paragraph();
-       paragraph.add(collegeInfo);
-       paragraph.setAlignment(Element.ALIGN_CENTER);
-       document.add(paragraph);
+            Chunk studentInfo = new Chunk();
+            studentInfo.append("\n\n\n\nNome: ").append(student.getName())
+                    .append("\nCPF: ").append(student.getCpf())
+                    .append("\nRG: ").append(student.getRg())
+                    .append("\nNascimento: ").append(new SimpleDateFormat("dd/MM/yyyy").format(student.getBirthdate()))
+                    .append("\nCurso: ").append(student.getProgram().getName())
+                    .append("\nCR: ").append(String.format("%.2f", student.getGpa()))
+                    .append("\n\nDisciplinas cursadas\n\n");
+            studentInfo.setLineHeight(15);
+            document.add(studentInfo);
 
-        Chunk studentInfo = new Chunk();
-        studentInfo.append("\n\n\n\nNome: ").append(student.getName())
-                .append("\nCPF: ").append(student.getCpf())
-                .append("\nRG: ").append(student.getRg())
-                .append("\nNascimento: ").append(new SimpleDateFormat("dd/MM/yyyy").format(student.getBirthdate()))
-                .append("\nCurso: ").append(student.getProgram().getName())
-                .append("\nCR: ").append(String.format("%.2f", student.getGpa()))
-                .append("\n\nDisciplinas cursadas\n\n");
-        studentInfo.setLineHeight(15);
-        document.add(studentInfo);
+            PdfPTable table = new PdfPTable(new float[]{2, 5, 1, 1, 1, 2});
+            table.setWidthPercentage(100);
+            addTableHeader(table);
+            addRows(table, student);
+            document.add(table);
 
-        PdfPTable table = new PdfPTable(new float[]{2, 5, 1, 1, 1, 2});
-        table.setWidthPercentage(100);
-        addTableHeader(table);
-        addRows(table, student);
-        document.add(table);
+            Chunk chunk = new Chunk("CRED - Créditos, CH - Carga Horária, MF - Média Final, SF - Situação Final");
+            Font font = new Font();
+            font.setSize(10);
+            chunk.setFont(font);
+            document.add(chunk);
 
-        Chunk chunk = new Chunk("CRED - Créditos, CH - Carga Horária, MF - Média Final, SF - Situação Final");
-        Font font = new Font();
-        font.setSize(10);
-        chunk.setFont(font);
-        document.add(chunk);
+            document.close();
 
-        document.close();
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        return new ByteArrayInputStream(out.toByteArray());
     }
 
     private static void addTableHeader(PdfPTable table) {

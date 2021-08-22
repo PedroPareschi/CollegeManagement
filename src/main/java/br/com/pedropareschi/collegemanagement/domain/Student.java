@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +74,8 @@ public class Student extends User {
     }
 
     public List<Term> getTerms() {
+        List<Term> terms = this.terms;
+        terms.sort(new SortTerm());
         return terms;
     }
 
@@ -80,4 +83,11 @@ public class Student extends User {
         this.terms = terms;
     }
 
+}
+
+class SortTerm implements Comparator<Term> {
+    @Override
+    public int compare(Term o1, Term o2) {
+        return o1.getNumber() - o2.getNumber();
+    }
 }

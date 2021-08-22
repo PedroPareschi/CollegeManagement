@@ -51,7 +51,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/programs/**",
             "/courses/**",
             "/colleges/**",
-            "/classes/**"
+            "/classes/**",
+            "/students/**"
     };
 
     private static final String[] PUBLIC_MATCHERS_POST = {
