@@ -34,8 +34,6 @@ public class DBService {
     @Autowired
     private ClassroomRepository classroomRepository;
 
-    @Autowired
-    private LectureRepository lectureRepository;
 
     @Autowired
     private ClassTermRepository classTermRepository;
@@ -43,8 +41,6 @@ public class DBService {
     @Autowired
     private TeacherRepository teacherRepository;
 
-    @Autowired
-    private TestRepository testRepository;
 
     @Autowired
     private TermRepository termRepository;
@@ -175,13 +171,11 @@ public class DBService {
         kaiqueCalculo.setGrades(Arrays.asList(6.5, 7.0));
         kaiqueFirstTerm.getClasses().add(kaiqueCalculo);
         calculoNoite.getStudents().add(kaiqueCalculo);
-        Test test = new Test(null, "Derivadas", data.parse("14/04/2021"), calculoNoite);
 
         ClassTerm kaiqueCalculo2 = new ClassTerm(kaiqueSecondTerm, calculo2Noite, ClassSituation.ACTIVE, 0);
         kaiqueCalculo2.setGrades(Arrays.asList(6.0));
         calculo2Noite.getStudents().add(kaiqueCalculo2);
         kaiqueSecondTerm.getClasses().add(kaiqueCalculo2);
-        Lecture lecture = new Lecture(null, "Algoritmos", data.parse("27/06/2021"), facManha);
 
         collegeRepository.saveAll(Arrays.asList(uniesquina, uniFederal));
         addressRepository.saveAll(Arrays.asList(kaiqueAddress, ninaAddress, leoAddress, mateusAddress, unesquinaAddress, uniFederalAddress));
@@ -194,8 +188,6 @@ public class DBService {
         teacherRepository.saveAll(Arrays.asList(leo, mateus));
         classRepository.saveAll(Arrays.asList(facManha, calculoTarde, calculoNoite, calculo2Noite));
         classroomRepository.saveAll(Arrays.asList(info, sala1, sala2, sala1Tarde, sala2Tarde));
-        testRepository.saveAll(Arrays.asList(test));
-        lectureRepository.saveAll(Arrays.asList(lecture));
         classTermRepository.saveAll(Arrays.asList(ninaFAC, kaiqueCalculo, kaiqueCalculo2));
     }
 }
