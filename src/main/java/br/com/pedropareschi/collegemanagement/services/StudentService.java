@@ -4,12 +4,15 @@ import br.com.pedropareschi.collegemanagement.domain.Address;
 import br.com.pedropareschi.collegemanagement.domain.Program;
 import br.com.pedropareschi.collegemanagement.domain.Student;
 import br.com.pedropareschi.collegemanagement.domain.enums.CollegeSituation;
+import br.com.pedropareschi.collegemanagement.domain.enums.Role;
 import br.com.pedropareschi.collegemanagement.domain.enums.Sex;
 import br.com.pedropareschi.collegemanagement.dto.NewStudentDTO;
 import br.com.pedropareschi.collegemanagement.dto.StudentDTO;
 import br.com.pedropareschi.collegemanagement.dto.StudentExtendedDTO;
 import br.com.pedropareschi.collegemanagement.repositories.AddressRepository;
 import br.com.pedropareschi.collegemanagement.repositories.StudentRepository;
+import br.com.pedropareschi.collegemanagement.security.UserSS;
+import br.com.pedropareschi.collegemanagement.services.exceptions.AuthorizationException;
 import br.com.pedropareschi.collegemanagement.services.exceptions.ObjectNotFoundException;
 import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +38,10 @@ public class StudentService {
     private BCryptPasswordEncoder encoder;
 
     public Student findById(Integer id) {
-//        UserSS user = UserService.authenticated();
-//        if (user==null || !user.hasRole(Role.ADMIN) && !user.hasRole(Role.COLLEGE_ADMIN) && !id.equals(user.getId())) {
-//            throw new AuthorizationException("Access denied");
-//        }
+        UserSS user = UserService.authenticated();
+        if (user == null || !user.hasRole(Role.ADMIN) && !user.hasRole(Role.COLLEGE_ADMIN) && !id.equals(user.getId())) {
+            throw new AuthorizationException("Access denied");
+        }
         Optional<Student> student = repository.findById(id);
         return student.orElseThrow(() -> new ObjectNotFoundException(
                 "Object not found! Id: " + id + ", Type: " + Student.class.getName()
