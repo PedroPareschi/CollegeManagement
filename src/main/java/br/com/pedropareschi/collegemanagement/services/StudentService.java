@@ -14,15 +14,12 @@ import br.com.pedropareschi.collegemanagement.repositories.StudentRepository;
 import br.com.pedropareschi.collegemanagement.security.UserSS;
 import br.com.pedropareschi.collegemanagement.services.exceptions.AuthorizationException;
 import br.com.pedropareschi.collegemanagement.services.exceptions.ObjectNotFoundException;
-import com.itextpdf.text.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.text.ParseException;
 import java.util.Optional;
 
 @Service
@@ -119,7 +116,7 @@ public class StudentService {
         }
     }
 
-    public ByteArrayInputStream getRecord(Integer id) throws DocumentException, FileNotFoundException, ParseException {
+    public ByteArrayInputStream getRecord(Integer id) {
         Student student = findById(id);
         return PdfService.academicRecord(student);
     }
